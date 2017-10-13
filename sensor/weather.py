@@ -27,10 +27,11 @@ SENSOR_TYPES = {
     'weather': ('Weather', None),
     'temperature': ('Temperature', '°C'),
     'windDirection': ('Wind direction', '°'),
-    'windSpeed': ('Wind Speed kmh', 'km/h'),
+    'windSpeed': ('Wind Speed level', 'level'),
     'humidity': ('Humidity', '%'),
-    'rain_trace': ('Rain Today', 'mm'),
+    'rainTrace': ('Rain Today', 'mm'),
     'pressure': ('Pressure', 'hPa'),
+    'observationTime': ('Observation time', None)
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -76,7 +77,9 @@ class WeatherSensor(Entity):
         return STATE_UNKNOWN
 
     def _get_code_by_condition(self):
-        if self._condition == 'weather':
+        if self._condition == 'observationTime':
+            return '000'
+        elif self._condition == 'weather':
             return '001'
         elif self._condition == 'temperature':
             return '002'
@@ -86,7 +89,7 @@ class WeatherSensor(Entity):
             return '004'
         elif self._condition == 'humidity':
             return '005'
-        elif self._condition == 'rain_trace':
+        elif self._condition == 'rainTrace':
             return '006'
         elif self._condition == 'pressure':
             return '007'
