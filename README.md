@@ -10,13 +10,13 @@ configuration variables
       - observeTime: 	 Observation time
       - weather:         Current weather (Not supplied by weather china yet in observation data)
       - temperature:     Current temperature in Celsius
-      - windSpeed:       Current wind speed in km/h
-      - windDirection:   Current wind direction, where the wind is coming from in degrees, with true north at 0° and progressing clockwise
+      - windSpeed:       Current wind speed in level, where the wind is coming from in degrees
+      - windDirection:   Current wind direction, with nature text description
       - humidity:        Current humidity in %
       - rain_trace:      Current rain today in mm
       - pressure:        Current sea-level air pressure in millibars.
 ```
-All the conditions listed above will be updated every ? minutes.
+All the conditions listed above will be updated every 10 minutes.
 
 full configuration as below
 ---------------------------

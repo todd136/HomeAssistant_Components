@@ -14,6 +14,7 @@ from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (CONF_MONITORED_CONDITIONS, TEMP_CELSIUS,
                                  CONF_API_KEY, ATTR_FRIENDLY_NAME, STATE_UNKNOWN)
 from homeassistant.helpers.entity import Entity
+from homeassistant.util import Throttle
 import homeassistant.helpers.config_validation as cv
 
 _RESOURCE = 'http://api.weatherdt.com/common/?area={}&type=observe&key={}'
@@ -22,13 +23,16 @@ _LOGGER = logging.getLogger(__name__)
 #
 CONF_AREA = 'area'
 
+# update time
+MIN_TIME_BETWEEN_UPDATES = timedelta(minutes=10)
+
 # Sensor types
 SENSOR_TYPES = {
     'observationTime': ('Observation time', None, '000'),
     'weather': ('Weather', None, '001'),
     'temperature': ('Temperature', '°C', '002'),
     'windSpeed': ('Wind Speed level', 'level', '003'),
-    'windDirection': ('Wind direction', '°', '004'),
+    'windDirection': ('Wind direction', None, '004'),
     'humidity': ('Humidity', '%', '005'),
     'rainTrace': ('Rain Today', 'mm', '006'),
     'pressure': ('Pressure', 'hPa', '007'),
@@ -125,6 +129,7 @@ class WeatherData(object):
         url = baseurl.format(self._location, self._api_key)
         return url
 
+    @Throttle(MIN_TIME_BETWEEN_UPDATES)
     def update(self):
         try:
             result = requests.get(self._build_request_url(), timeout=10).json()
