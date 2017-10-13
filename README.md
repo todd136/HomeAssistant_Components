@@ -8,7 +8,7 @@ configuration variables
 - area (Required): The location code for the observe data to request from Weather China. See below for details.
 - monitored_conditions  array (Required): Conditions to display in the frontend. The following conditions can be monitored.
       - observeTime: 	 Observation time
-	  - weather:         Current weather (Not supplied by weather china yet in observation data)
+      - weather:         Current weather (Not supplied by weather china yet in observation data)
       - temperature:     Current temperature in Celsius
       - windSpeed:       Current wind speed in km/h
       - windDirection:   Current wind direction, where the wind is coming from in degrees, with true north at 0° and progressing clockwise

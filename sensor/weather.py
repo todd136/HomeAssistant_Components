@@ -24,14 +24,28 @@ CONF_AREA = 'area'
 
 # Sensor types
 SENSOR_TYPES = {
-    'weather': ('Weather', None),
-    'temperature': ('Temperature', '°C'),
-    'windDirection': ('Wind direction', '°'),
-    'windSpeed': ('Wind Speed level', 'level'),
-    'humidity': ('Humidity', '%'),
-    'rainTrace': ('Rain Today', 'mm'),
-    'pressure': ('Pressure', 'hPa'),
-    'observationTime': ('Observation time', None)
+    'observationTime': ('Observation time', None, '000'),
+    'weather': ('Weather', None, '001'),
+    'temperature': ('Temperature', '°C', '002'),
+    'windSpeed': ('Wind Speed level', 'level', '003'),
+    'windDirection': ('Wind direction', '°', '004'),
+    'humidity': ('Humidity', '%', '005'),
+    'rainTrace': ('Rain Today', 'mm', '006'),
+    'pressure': ('Pressure', 'hPa', '007'),
+}
+
+# wind direction code text dict
+WIND_DIRECTION = {
+    '0': ('无持续风向', 'No wind'),
+    '1': ('东北风', 'Northeast'),
+    '2': ('东风', 'East'),
+    '3': ('东南风', 'Southeast'),
+    '4': ('南风', 'South'),
+    '5': ('西南风', 'Southwest'),
+    '6': ('西风', 'West'),
+    '7': ('西北风', 'Northwest'),
+    '8': ('北风', 'North'),
+    '9': ('旋转风', 'Whirl wind'),
 }
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend({
@@ -70,39 +84,27 @@ class WeatherSensor(Entity):
     @property
     def state(self):
         """Return the state of the sensor."""
-        if self.rest.data and self._get_code_by_condition() in self.rest.data:
-            state = self.rest.data[self._get_code_by_condition()]
+        condition_code = self._get_condition_code()
+        if self.rest.data and condition_code in self.rest.data:
+            state = self.rest.data[condition_code]
+            if self._condition == 'windDirection':
+                state = self._get_wind_by_code(state)
             return state
 
         return STATE_UNKNOWN
 
-    def _get_code_by_condition(self):
-        if self._condition == 'observationTime':
-            return '000'
-        elif self._condition == 'weather':
-            return '001'
-        elif self._condition == 'temperature':
-            return '002'
-        elif self._condition == 'windSpeed':
-            return '003'
-        elif self._condition == 'windDirection':
-            return '004'
-        elif self._condition == 'humidity':
-            return '005'
-        elif self._condition == 'rainTrace':
-            return '006'
-        elif self._condition == 'pressure':
-            return '007'
-        else:
-            return None
+    def _get_condition_code(self):
+        """Return the code of the condition, that used to get value from weather china"""
+        return SENSOR_TYPES[self._condition][2]
+
+    def _get_wind_by_code(self, state):
+        """Return the wind direction by code dict"""
+        return WIND_DIRECTION[state][0]
 
     @property
     def unit_of_measurement(self):
         """Return the unit of measurement."""
         return SENSOR_TYPES[self._condition][1]
-
-    # def _get_state(self):
-    #     return STATE_UNKNOWN
 
     def update(self):
         """Fetch new state data for the sensor.
